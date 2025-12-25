@@ -1,8 +1,24 @@
 package mk.ukim.finki.wp.june2025g1.web;
 
 import mk.ukim.finki.wp.june2025g1.model.Industry;
+import mk.ukim.finki.wp.june2025g1.model.Startup;
+import mk.ukim.finki.wp.june2025g1.service.FounderService;
+import mk.ukim.finki.wp.june2025g1.service.StartupService;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
+@Controller
 public class StartupController {
+
+    private final StartupService startupService;
+    private final FounderService founderService;
+
+    public StartupController(StartupService startupService, FounderService founderService) {
+        this.startupService = startupService;
+        this.founderService = founderService;
+    }
 
     /**
      * This method should use the "list.html" template to display all startups.
@@ -21,8 +37,21 @@ public class StartupController {
      * @param pageSize    The number of items per page.
      * @return The view "list.html"
      */
-    public String listAll(String name, Double valuation, Integer yearFounded, Industry industry, Long founderId, int pageNum, int pageSize) {
-        return "";
+    @GetMapping({"/", "/startups"})
+    public String listAll(@RequestParam(required = false) String name,
+                          @RequestParam(required = false) Double valuation,
+                          @RequestParam(required = false) Integer yearFounded,
+                          @RequestParam(required = false) Industry industry,
+                          @RequestParam(required = false) Long founderId,
+                          @RequestParam(defaultValue = "1") int pageNum,
+                          @RequestParam(defaultValue = "20") int pageSize,
+                          Model model) {
+        Page<Startup> page = startupService.findPage(name, valuation, yearFounded, industry, founderId, pageNum - 1, pageSize);
+        model.addAttribute("startups", page.getContent());
+        model.addAttribute("page", page);
+        model.addAttribute("industries", Industry.values());
+        model.addAttribute("founders", founderService.listAll());
+        return "list";
     }
 
     /**
@@ -31,8 +60,11 @@ public class StartupController {
      *
      * @return The view "form.html".
      */
-    public String showAdd() {
-        return "";
+    @GetMapping("/startups/add")
+    public String showAdd(Model model) {
+        model.addAttribute("industries", Industry.values());
+        model.addAttribute("founders", founderService.listAll());
+        return "form";
     }
 
     /**
@@ -42,8 +74,13 @@ public class StartupController {
      *
      * @return The view "form.html".
      */
-    public String showEdit(Long id) {
-        return "";
+    @GetMapping("/startups/edit/{id}")
+    public String showEdit(@PathVariable Long id, Model model) {
+        Startup startup = startupService.findById(id);
+        model.addAttribute("startup", startup);
+        model.addAttribute("industries", Industry.values());
+        model.addAttribute("founders", founderService.listAll());
+        return "form";
     }
 
     /**
@@ -58,8 +95,14 @@ public class StartupController {
      * @param founderId   The id of the founder of the startup
      * @return Redirects to the list of startups
      */
-    public String create(String name, Double valuation, Integer yearFounded, Industry industry, Long founderId) {
-        return "";
+    @PostMapping("/startups")
+    public String create(@RequestParam String name,
+                         @RequestParam Double valuation,
+                         @RequestParam Integer yearFounded,
+                         @RequestParam Industry industry,
+                         @RequestParam Long founderId) {
+        startupService.create(name, valuation, yearFounded, industry, founderId);
+        return "redirect:/startups";
     }
 
     /**
@@ -75,8 +118,15 @@ public class StartupController {
      * @param founderId   The id of the founder of the startup
      * @return Redirects to the list of startups
      */
-    public String update(Long id, String name, Double valuation, Integer yearFounded, Industry industry, Long founderId) {
-        return "";
+    @PostMapping("/startups/{id}")
+    public String update(@PathVariable Long id,
+                         @RequestParam String name,
+                         @RequestParam Double valuation,
+                         @RequestParam Integer yearFounded,
+                         @RequestParam Industry industry,
+                         @RequestParam Long founderId) {
+        startupService.update(id, name, valuation, yearFounded, industry, founderId);
+        return "redirect:/startups";
     }
 
     /**
@@ -87,8 +137,10 @@ public class StartupController {
      * @param id The ID of the startup to delete
      * @return Redirects to the list of startups
      */
-    public String delete(Long id) {
-        return "";
+    @PostMapping("/startups/delete/{id}")
+    public String delete(@PathVariable Long id) {
+        startupService.delete(id);
+        return "redirect:/startups";
     }
 
     /**
@@ -99,8 +151,10 @@ public class StartupController {
      * @param id The ID of the startup to deactivate
      * @return Redirects to the list of startups
      */
-    public String deactivate(Long id) {
-        return "";
+    @PostMapping("/startups/deactivate/{id}")
+    public String deactivate(@PathVariable Long id) {
+        startupService.deactivate(id);
+        return "redirect:/startups";
     }
 }
 

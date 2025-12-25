@@ -37,7 +37,7 @@ public class SeleniumScenarioTest {
     static {
         SubmissionHelper.exam = "2025-june-g1";
         //TODO: CHANGE THE VALUE OF THE SubmissionHelper.index WITH YOUR INDEX NUMBER!!!
-        SubmissionHelper.index = "TODO";
+        SubmissionHelper.index = "173229";
     }
 
     @Autowired

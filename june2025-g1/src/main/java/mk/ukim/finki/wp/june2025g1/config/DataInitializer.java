@@ -1,12 +1,15 @@
 package mk.ukim.finki.wp.june2025g1.config;
 
+import jakarta.annotation.PostConstruct;
 import mk.ukim.finki.wp.june2025g1.model.Founder;
 import mk.ukim.finki.wp.june2025g1.model.Industry;
 import mk.ukim.finki.wp.june2025g1.service.FounderService;
 import mk.ukim.finki.wp.june2025g1.service.StartupService;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class DataInitializer {
 
     private final StartupService startupService;
@@ -25,6 +28,7 @@ public class DataInitializer {
         return Industry.CYBERSECURITY;
     }
 
+    @PostConstruct
     public void initData() {
         for (int i = 1; i <= 3; i++) {
             this.founderService.create("Founder " + i, "founder" + i + "@example.com");
