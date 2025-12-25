@@ -90,7 +90,6 @@ public class SecurityConfig {
                         .authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
                         .permitAll()
                         .defaultSuccessUrl("/startups", true)
                 )
